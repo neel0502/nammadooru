@@ -9,8 +9,10 @@ import { useAppStore } from '../store/useAppStore';
 import { useRealtime } from '../hooks/useRealtime';
 
 export function Home() {
-  const { viewMode, setShowReportForm } = useAppStore();
+  const { viewMode, showReportForm, setShowReportForm, showWardSheet, showReportDetail } = useAppStore();
   useRealtime();
+
+  const anySheetOpen = showReportForm || showWardSheet || showReportDetail;
 
   return (
     <div className="home">
@@ -19,12 +21,14 @@ export function Home() {
       <main className="home__main">
         {viewMode === 'map' ? <MapView /> : <IssueList />}
       </main>
-      <button
-        className="report-cta"
-        onClick={() => setShowReportForm(true)}
-      >
-        📸 Report an Issue
-      </button>
+      {!anySheetOpen && (
+        <button
+          className="report-cta"
+          onClick={() => setShowReportForm(true)}
+        >
+          📸 Report an Issue
+        </button>
+      )}
       <WardSheet />
       <ReportDetail />
       <ReportForm />

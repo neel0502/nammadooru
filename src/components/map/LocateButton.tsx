@@ -25,11 +25,11 @@ export function LocateButton() {
         aria-label="Find my location"
       >
         {loading ? (
-          <svg className="locate-spinner" viewBox="0 0 24 24" width="20" height="20">
+          <svg className="locate-spinner" viewBox="0 0 24 24" width="24" height="24">
             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" strokeDasharray="30 70" />
           </svg>
         ) : (
-          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2">
             <circle cx="12" cy="12" r="3" />
             <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
           </svg>

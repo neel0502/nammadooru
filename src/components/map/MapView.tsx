@@ -5,20 +5,30 @@ import { useAppStore } from '../../store/useAppStore';
 import { WardLayer } from './WardLayer';
 import { ReportMarkers } from './ReportMarkers';
 import { LocateButton } from './LocateButton';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+
+// Disable Leaflet tap delay for faster mobile interactions
+if (L.Browser.mobile) {
+  (L.Map as any).prototype.options.tap = false;
+}
 
 export function MapView() {
   const setWardsGeoJSON = useAppStore((s) => s.setWardsGeoJSON);
   const [geoData, setGeoData] = useState<GeoJSON.FeatureCollection | null>(null);
 
   useEffect(() => {
-    fetch('/data/bengaluru-wards.geojson')
-      .then((r) => r.json())
-      .then((data: GeoJSON.FeatureCollection) => {
-        setGeoData(data);
-        setWardsGeoJSON(data);
-      })
-      .catch((err) => console.error('Failed to load ward boundaries:', err));
+    // Lazy load GeoJSON — map tiles render first
+    const timer = requestIdleCallback(() => {
+      fetch('/data/bengaluru-wards.geojson')
+        .then((r) => r.json())
+        .then((data: GeoJSON.FeatureCollection) => {
+          setGeoData(data);
+          setWardsGeoJSON(data);
+        })
+        .catch((err) => console.error('Failed to load ward boundaries:', err));
+    });
+    return () => cancelIdleCallback(timer);
   }, [setWardsGeoJSON]);
 
   return (
@@ -31,6 +41,11 @@ export function MapView() {
         zoomControl={false}
         style={{ height: '100%', width: '100%' }}
         className="nammadooru-map"
+        /* @ts-expect-error Leaflet typing */
+        tap={false}
+        touchZoom={true}
+        dragging={true}
+        bounceAtZoomLimits={false}
       >
         <TileLayer url={TILE_URL} attribution={TILE_ATTRIBUTION} />
         <ZoomControl position="bottomright" />
