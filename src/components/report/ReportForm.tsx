@@ -131,6 +131,7 @@ export function ReportForm() {
       isOpen={showReportForm}
       onClose={() => setShowReportForm(false)}
       title="Report an Issue"
+      tall
     >
       <div className="report-form">
         {success ? (

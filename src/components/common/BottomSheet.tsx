@@ -4,10 +4,11 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
+  tall?: boolean;
   children: ReactNode;
 }
 
-export function BottomSheet({ isOpen, onClose, title, children }: Props) {
+export function BottomSheet({ isOpen, onClose, title, tall, children }: Props) {
   const sheetRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const startY = useRef(0);
@@ -76,7 +77,7 @@ export function BottomSheet({ isOpen, onClose, title, children }: Props) {
     <div className="bottom-sheet-overlay" onClick={onClose}>
       <div
         ref={sheetRef}
-        className={`bottom-sheet ${isOpen ? 'bottom-sheet--open' : ''}`}
+        className={`bottom-sheet ${isOpen ? 'bottom-sheet--open' : ''} ${tall ? 'bottom-sheet--tall' : ''}`}
         onClick={(e) => e.stopPropagation()}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}

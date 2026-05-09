@@ -46,8 +46,6 @@ body {
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
   overscroll-behavior: none;
-  position: fixed;
-  inset: 0;
 }
 
 #root {
@@ -61,10 +59,11 @@ button, a, select, input, textarea, [role="button"] {
   touch-action: manipulation;
 }
 
-/* Active/pressed states for all tappable elements */
-button:active, a:active, .issue-card:active, .filter-bar__pill:active {
-  transform: scale(0.97);
-  opacity: 0.85;
+/* Active/pressed states for tappable elements (not buttons with existing transforms) */
+.filter-bar__pill:active,
+.issue-card:active,
+.official-card__action:active {
+  opacity: 0.8;
 }
 
 /* --- Layout --- */
@@ -243,9 +242,6 @@ button:active, a:active, .issue-card:active, .filter-bar__pill:active {
 
 .report-cta:active { transform: translateX(-50%) scale(0.95); }
 
-/* Hide CTA when bottom sheet is open */
-.home:has(.bottom-sheet-overlay) .report-cta { display: none; }
-
 /* --- Bottom Sheet --- */
 .bottom-sheet-overlay {
   position: fixed;
@@ -298,7 +294,7 @@ button:active, a:active, .issue-card:active, .filter-bar__pill:active {
 }
 
 /* Report form gets taller sheet */
-.bottom-sheet:has(.report-form) {
+.bottom-sheet--tall {
   max-height: 85vh;
 }
 

@@ -5,21 +5,16 @@ import { useAppStore } from '../../store/useAppStore';
 import { WardLayer } from './WardLayer';
 import { ReportMarkers } from './ReportMarkers';
 import { LocateButton } from './LocateButton';
-import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-
-// Disable Leaflet tap delay for faster mobile interactions
-if (L.Browser.mobile) {
-  (L.Map as any).prototype.options.tap = false;
-}
 
 export function MapView() {
   const setWardsGeoJSON = useAppStore((s) => s.setWardsGeoJSON);
   const [geoData, setGeoData] = useState<GeoJSON.FeatureCollection | null>(null);
 
   useEffect(() => {
-    // Lazy load GeoJSON — map tiles render first
-    const timer = requestIdleCallback(() => {
+    // Load GeoJSON after a short delay so map tiles render first.
+    // Use setTimeout as a universal fallback (requestIdleCallback is NOT in Safari).
+    const timer = setTimeout(() => {
       fetch('/data/bengaluru-wards.geojson')
         .then((r) => r.json())
         .then((data: GeoJSON.FeatureCollection) => {
@@ -27,8 +22,8 @@ export function MapView() {
           setWardsGeoJSON(data);
         })
         .catch((err) => console.error('Failed to load ward boundaries:', err));
-    });
-    return () => cancelIdleCallback(timer);
+    }, 100);
+    return () => clearTimeout(timer);
   }, [setWardsGeoJSON]);
 
   return (
