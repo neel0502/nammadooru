@@ -5,9 +5,9 @@
 import type { SeverityLevel, ReportStatus } from '../types';
 
 // --- Map Defaults ---
-export const MAP_CENTER: [number, number] = [12.9716, 77.5946]; // Bengaluru center
-export const MAP_ZOOM = 12;
-export const MAP_MIN_ZOOM = 10;
+export const MAP_CENTER: [number, number] = [12.97, 77.59]; // Bengaluru center
+export const MAP_ZOOM = 11;
+export const MAP_MIN_ZOOM = 3;
 export const MAP_MAX_ZOOM = 18;
 
 export const TILE_URL = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';

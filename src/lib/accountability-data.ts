@@ -102,7 +102,7 @@ export const AC_DATA: ACData[] = [
   { name: 'B.T.M. Layout',       geoJsonNames: ['B.T.M Layout'],        number: 169, pcSlug: 'bangalore-south',   mla: { name: 'Ramalinga Reddy',           party: 'INC', since: '2023' } },
   { name: 'Jayanagar',           geoJsonNames: ['Jayanagar'],           number: 170, pcSlug: 'bangalore-south',   mla: { name: 'C.K. Ramamurthy',           party: 'BJP', since: '2023' } },
   { name: 'Govindraj Nagar',     geoJsonNames: ['Govindraj Nagar'],     number: 171, pcSlug: 'bangalore-south',   mla: { name: 'Priya Krishna',             party: 'INC', since: '2023' } },
-  { name: 'Vijay Nagar',         geoJsonNames: ['Vijayanagar'],         number: 172, pcSlug: 'bangalore-south',   mla: { name: 'H.R. Gaviyappa',            party: 'INC', since: '2023' } },
+  { name: 'Vijay Nagar',         geoJsonNames: ['Vijayanagar'],         number: 172, pcSlug: 'bangalore-south',   mla: { name: 'M. Krishnappa',             party: 'INC', since: '2023' } },
   { name: 'Bommanahalli',        geoJsonNames: ['Bommanahalli'],        number: 173, pcSlug: 'bangalore-south',   mla: { name: 'Satish Reddy M.',           party: 'BJP', since: '2023' } },
 
   // ── Bangalore Rural PC ──

@@ -8,8 +8,8 @@ export function TopBar() {
         </h1>
       </div>
       <div className="top-bar__right">
-        <span className="top-bar__constituency">Byatarayanapura</span>
-        <span className="top-bar__zone">North</span>
+        <span className="top-bar__constituency">Bengaluru</span>
+        <span className="top-bar__zone">369 Wards</span>
       </div>
     </header>
   );
