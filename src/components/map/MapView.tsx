@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { MapContainer, TileLayer, ZoomControl, GeoJSON } from 'react-leaflet';
 import { union, mask } from '@turf/turf';
-import { MAP_CENTER, MAP_ZOOM, MAP_MIN_ZOOM, MAP_MAX_ZOOM, TILE_URL, TILE_ATTRIBUTION } from '../../lib/constants';
+import { MAP_BOUNDS, MAP_MAX_BOUNDS, MAP_MIN_ZOOM, MAP_MAX_ZOOM, TILE_URL, TILE_ATTRIBUTION } from '../../lib/constants';
 import { useAppStore } from '../../store/useAppStore';
 import { WardLayer } from './WardLayer';
 import { ReportMarkers } from './ReportMarkers';
@@ -42,8 +42,9 @@ export function MapView() {
   return (
     <div className="map-container">
       <MapContainer
-        center={MAP_CENTER}
-        zoom={MAP_ZOOM}
+        bounds={MAP_BOUNDS}
+        maxBounds={MAP_MAX_BOUNDS}
+        maxBoundsViscosity={1.0}
         minZoom={MAP_MIN_ZOOM}
         maxZoom={MAP_MAX_ZOOM}
         zoomControl={false}

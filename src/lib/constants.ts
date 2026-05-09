@@ -7,8 +7,14 @@ import type { SeverityLevel, ReportStatus } from '../types';
 // --- Map Defaults ---
 export const MAP_CENTER: [number, number] = [12.97, 77.59]; // Bengaluru center
 export const MAP_ZOOM = 11;
-export const MAP_MIN_ZOOM = 3;
+export const MAP_MIN_ZOOM = 10;
 export const MAP_MAX_ZOOM = 18;
+
+export const MAP_BOUNDS: [[number, number], [number, number]] = [[12.80, 77.40], [13.17, 77.80]];
+export const MAP_MAX_BOUNDS: [[number, number], [number, number]] = [
+  [12.75, 77.35],  // southwest corner (with buffer)
+  [13.22, 77.85]   // northeast corner (with buffer)
+];
 
 export const TILE_URL = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 export const TILE_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
