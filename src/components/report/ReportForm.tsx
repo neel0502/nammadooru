@@ -1,4 +1,6 @@
 import { useState, useRef } from 'react';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import { point } from '@turf/helpers';
 import { BottomSheet } from '../common/BottomSheet';
 import { useAppStore } from '../../store/useAppStore';
 import { useGeolocation } from '../../hooks/useGeolocation';
@@ -7,7 +9,7 @@ import { CATEGORIES } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
 
 export function ReportForm() {
-  const { showReportForm, setShowReportForm, addReport } = useAppStore();
+  const { showReportForm, setShowReportForm, addReport, wardsGeoJSON } = useAppStore();
   const { latitude, longitude, loading: gpsLoading, locate } = useGeolocation();
   const fingerprint = useFingerprint();
 
@@ -17,6 +19,7 @@ export function ReportForm() {
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [outOfBoundsError, setOutOfBoundsError] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,6 +38,13 @@ export function ReportForm() {
     if (fileRef.current) fileRef.current.value = '';
   };
 
+  const resetForm = () => {
+    setSelectedCategory(null);
+    setDescription('');
+    removePhoto();
+    setOutOfBoundsError(false);
+  };
+
   const handleSubmit = async () => {
     if (!selectedCategory) return;
     if (!latitude || !longitude) {
@@ -43,6 +53,25 @@ export function ReportForm() {
     }
 
     setSubmitting(true);
+    setOutOfBoundsError(false);
+
+    // Validate location is inside GBA
+    if (wardsGeoJSON) {
+      const pt = point([longitude, latitude]);
+      const isInside = wardsGeoJSON.features.some((feature: any) => {
+        try {
+          return booleanPointInPolygon(pt, feature);
+        } catch (e) {
+          return false;
+        }
+      });
+
+      if (!isInside) {
+        setOutOfBoundsError(true);
+        setSubmitting(false);
+        return;
+      }
+    }
 
     try {
       // Get city and category IDs from Supabase
@@ -120,9 +149,7 @@ export function ReportForm() {
       setTimeout(() => {
         setShowReportForm(false);
         setSuccess(false);
-        setSelectedCategory(null);
-        setDescription('');
-        removePhoto();
+        resetForm();
       }, 1500);
     } catch (err) {
       console.error('Submit failed:', err);
@@ -220,6 +247,15 @@ export function ReportForm() {
                 </button>
               )}
             </div>
+
+            {/* Error Message for GBA Bounds */}
+            {outOfBoundsError && (
+              <div className="report-form__error" style={{ background: '#fef2f2', padding: '12px', borderRadius: '8px', borderLeft: '4px solid #ef4444' }}>
+                <p style={{ color: '#991b1b', fontSize: '13px', margin: 0, fontWeight: 500 }}>
+                  📍 This location is outside the Greater Bengaluru Authority (GBA) area. NammaDooru currently covers only the 369 GBA wards. We're working on expanding to other areas.
+                </p>
+              </div>
+            )}
 
             {/* Submit */}
             <button

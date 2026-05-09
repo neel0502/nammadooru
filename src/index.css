@@ -1256,3 +1256,8 @@ button, a, select, input, textarea, [role="button"] {
 
   .ward-sheet__heading { font-size: 15px; }
 }
+
+.gba-mask {
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
