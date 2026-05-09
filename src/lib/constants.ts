@@ -10,8 +10,8 @@ export const MAP_ZOOM = 12;
 export const MAP_MIN_ZOOM = 10;
 export const MAP_MAX_ZOOM = 18;
 
-export const TILE_URL = 'https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.png';
-export const TILE_ATTRIBUTION = '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> &copy; <a href="https://stamen.com/">Stamen Design</a>';
+export const TILE_URL = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+export const TILE_ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
 // --- Brand Colors ---
 export const COLORS = {

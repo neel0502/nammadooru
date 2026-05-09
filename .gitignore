@@ -23,3 +23,4 @@ dist-ssr
 *.sln
 *.sw?
 gba-369-wards-december-2025.geojson
+.vercel
