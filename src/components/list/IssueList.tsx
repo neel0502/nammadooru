@@ -1,13 +1,30 @@
+import { useState } from 'react';
 import { useReports } from '../../hooks/useReports';
 import { useAppStore } from '../../store/useAppStore';
 import { CATEGORY_COLOR_MAP, CATEGORY_ICON_MAP, SEVERITY_COLORS, SEVERITY_LABELS, STATUS_LABELS, googleMapsUrl } from '../../lib/constants';
 import { timeAgo } from '../../lib/geo';
+import { shareReport } from '../../lib/share';
+import { CATEGORIES } from '../../lib/constants';
 
 export function IssueList() {
   const { reports } = useReports();
   const { setSelectedReport, setViewMode } = useAppStore();
+  const [toast, setToast] = useState<string | null>(null);
 
   const sorted = [...reports].sort((a, b) => b.upvote_count - a.upvote_count);
+
+  const handleShare = async (e: React.MouseEvent, r: typeof sorted[0]) => {
+    e.stopPropagation();
+    const catConfig = CATEGORIES.find(c => c.slug === r.category_id);
+    const result = await shareReport({
+      report: r,
+      categoryName: catConfig?.name || r.category_id,
+    });
+    if (result === 'copied') {
+      setToast('Copied!');
+      setTimeout(() => setToast(null), 1500);
+    }
+  };
 
   return (
     <div className="issue-list">
@@ -54,17 +71,25 @@ export function IssueList() {
                   <span className="issue-card__votes">👍 {r.upvote_count}</span>
                 </div>
               </div>
-              <a
-                href={googleMapsUrl(r.location.lat, r.location.lng)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="issue-card__maps"
-                onClick={(e) => e.stopPropagation()}
-              >📍</a>
+              <div className="issue-card__actions-col">
+                <button
+                  className="issue-card__share"
+                  onClick={(e) => handleShare(e, r)}
+                  aria-label="Share"
+                >📤</button>
+                <a
+                  href={googleMapsUrl(r.location.lat, r.location.lng)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="issue-card__maps"
+                  onClick={(e) => e.stopPropagation()}
+                >📍</a>
+              </div>
             </div>
           );
         })
       )}
+      {toast && <div className="success-toast">{toast}</div>}
     </div>
   );
 }

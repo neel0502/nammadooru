@@ -1,12 +1,16 @@
+import { useState } from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { BottomSheet } from '../common/BottomSheet';
 import { AccountabilityTree } from '../accountability/AccountabilityTree';
+import { DepartmentCard } from '../department/DepartmentCard';
 import { CATEGORY_COLOR_MAP, CATEGORY_ICON_MAP, SEVERITY_COLORS, SEVERITY_LABELS, STATUS_COLORS, STATUS_LABELS, googleMapsUrl } from '../../lib/constants';
 import { lookupAccountability } from '../../lib/accountability-data';
 import { timeAgo } from '../../lib/geo';
+import { shareReport, whatsappShareLink } from '../../lib/share';
 
 export function ReportDetail() {
   const { selectedReport, showReportDetail, setShowReportDetail, wardsGeoJSON } = useAppStore();
+  const [shareToast, setShareToast] = useState<string | null>(null);
 
   if (!selectedReport) return null;
 
@@ -16,7 +20,8 @@ export function ReportDetail() {
   const catName = r.category?.name || r.category_id;
   const hasPhoto = r.photo_urls && r.photo_urls.length > 0 && r.photo_urls[0];
 
-  // Try to find the ward's AC from GeoJSON to look up accountability
+  // Find ward info from GeoJSON
+  let wardName = '';
   let acName = '';
   if (wardsGeoJSON && r.location) {
     const wardFeature = wardsGeoJSON.features.find((f: any) => {
@@ -25,10 +30,26 @@ export function ReportDetail() {
     });
     if (wardFeature) {
       acName = (wardFeature.properties as any)?.ac || '';
+      wardName = (wardFeature.properties as any)?.ward_name || '';
     }
   }
 
   const { ac, pc } = lookupAccountability(acName);
+
+  const shareOpts = {
+    report: r,
+    categoryName: catName,
+    wardName: wardName || undefined,
+    mlaName: ac?.mla?.name || undefined,
+  };
+
+  const handleShare = async () => {
+    const result = await shareReport(shareOpts);
+    if (result === 'copied') {
+      setShareToast('Copied to clipboard!');
+      setTimeout(() => setShareToast(null), 2000);
+    }
+  };
 
   return (
     <BottomSheet
@@ -71,14 +92,28 @@ export function ReportDetail() {
           <p className="report-detail__time">{timeAgo(r.created_at)}</p>
         </div>
 
-        <a
-          href={googleMapsUrl(r.location.lat, r.location.lng)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="report-detail__maps-btn"
-        >
-          📍 Open in Google Maps
-        </a>
+        {/* Action buttons row */}
+        <div className="report-detail__actions">
+          <a
+            href={googleMapsUrl(r.location.lat, r.location.lng)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="report-detail__action-btn"
+          >
+            📍 Maps
+          </a>
+          <button className="report-detail__action-btn" onClick={handleShare}>
+            📤 Share
+          </button>
+          <a
+            href={whatsappShareLink(shareOpts)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="report-detail__action-btn report-detail__action-btn--wa"
+          >
+            💬 WhatsApp
+          </a>
+        </div>
 
         <div className="report-detail__upvote">
           <button className="report-detail__upvote-btn">
@@ -86,6 +121,7 @@ export function ReportDetail() {
           </button>
         </div>
 
+        {/* Accountability */}
         <div className="report-detail__accountability">
           <h4>Who's Accountable?</h4>
           <AccountabilityTree
@@ -96,7 +132,20 @@ export function ReportDetail() {
             pcName={pc?.name}
           />
         </div>
+
+        {/* Department Routing */}
+        <div className="report-detail__department">
+          <h4>Report to Department</h4>
+          <DepartmentCard
+            report={r}
+            categoryName={catName}
+            categoryColor={catColor}
+            wardName={wardName || undefined}
+          />
+        </div>
       </div>
+
+      {shareToast && <div className="success-toast">{shareToast}</div>}
     </BottomSheet>
   );
 }
