@@ -19,6 +19,7 @@ export function IssueList() {
         sorted.map((r) => {
           const catColor = CATEGORY_COLOR_MAP[r.category_id] || '#6b7280';
           const catIcon = CATEGORY_ICON_MAP[r.category_id] || '📌';
+          const hasPhoto = r.photo_urls && r.photo_urls.length > 0 && r.photo_urls[0];
 
           return (
             <div
@@ -29,9 +30,18 @@ export function IssueList() {
                 setViewMode('map');
               }}
             >
-              <div className="issue-card__icon" style={{ backgroundColor: catColor }}>
-                {catIcon}
-              </div>
+              {hasPhoto ? (
+                <img
+                  src={r.photo_urls[0]}
+                  alt=""
+                  className="issue-card__thumb"
+                  loading="lazy"
+                />
+              ) : (
+                <div className="issue-card__icon" style={{ backgroundColor: catColor }}>
+                  {catIcon}
+                </div>
+              )}
               <div className="issue-card__content">
                 <h4 className="issue-card__title">{r.description?.slice(0, 60) || 'Untitled'}</h4>
                 <p className="issue-card__address">{r.address || 'Unknown location'}</p>

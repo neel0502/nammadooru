@@ -29,6 +29,12 @@ export function ReportForm() {
     }
   };
 
+  const removePhoto = () => {
+    setPhoto(null);
+    setPhotoPreview(null);
+    if (fileRef.current) fileRef.current.value = '';
+  };
+
   const handleSubmit = async () => {
     if (!selectedCategory) return;
     if (!latitude || !longitude) {
@@ -116,8 +122,7 @@ export function ReportForm() {
         setSuccess(false);
         setSelectedCategory(null);
         setDescription('');
-        setPhoto(null);
-        setPhotoPreview(null);
+        removePhoto();
       }, 1500);
     } catch (err) {
       console.error('Submit failed:', err);
@@ -152,9 +157,23 @@ export function ReportForm() {
                 style={{ display: 'none' }}
               />
               {photoPreview ? (
-                <div className="report-form__preview" onClick={() => fileRef.current?.click()}>
+                <div className="report-form__preview">
                   <img src={photoPreview} alt="Preview" />
-                  <span className="report-form__preview-change">Tap to change</span>
+                  <button
+                    className="report-form__preview-remove"
+                    onClick={removePhoto}
+                    type="button"
+                    aria-label="Remove photo"
+                  >
+                    ✕
+                  </button>
+                  <button
+                    className="report-form__preview-change"
+                    onClick={() => fileRef.current?.click()}
+                    type="button"
+                  >
+                    📷 Retake
+                  </button>
                 </div>
               ) : (
                 <button className="report-form__capture-btn" onClick={() => fileRef.current?.click()}>

@@ -14,13 +14,11 @@ export function ReportDetail() {
   const catColor = CATEGORY_COLOR_MAP[r.category_id] || '#6b7280';
   const catIcon = CATEGORY_ICON_MAP[r.category_id] || '📌';
   const catName = r.category?.name || r.category_id;
+  const hasPhoto = r.photo_urls && r.photo_urls.length > 0 && r.photo_urls[0];
 
   // Try to find the ward's AC from GeoJSON to look up accountability
   let acName = '';
   if (wardsGeoJSON && r.location) {
-    // Find the closest ward feature by checking which ward this report is in
-    // For simplicity, we'll use a basic point-in-polygon check or just use ward_id
-    // For now, try to find the ward from the store
     const wardFeature = wardsGeoJSON.features.find((f: any) => {
       const wId = f.properties?.ward_id?.toString();
       return wId && wId === r.ward_id;
@@ -38,6 +36,22 @@ export function ReportDetail() {
       onClose={() => setShowReportDetail(false)}
     >
       <div className="report-detail">
+        {/* Hero photo or category placeholder */}
+        <div className="report-detail__hero">
+          {hasPhoto ? (
+            <img
+              src={r.photo_urls[0]}
+              alt="Report photo"
+              className="report-detail__photo"
+              loading="lazy"
+            />
+          ) : (
+            <div className="report-detail__photo-placeholder" style={{ backgroundColor: catColor }}>
+              <span className="report-detail__photo-emoji">{catIcon}</span>
+            </div>
+          )}
+        </div>
+
         <div className="report-detail__badges">
           <span className="report-detail__badge" style={{ backgroundColor: catColor, color: '#fff' }}>
             {catIcon} {catName}
