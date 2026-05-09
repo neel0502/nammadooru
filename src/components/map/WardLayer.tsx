@@ -30,9 +30,9 @@ export function WardLayer({ data }: Props) {
     const props = feature?.properties as WardFeatureProperties;
     const wardId = props?.ward_id?.toString() || '';
     const count = reportCounts[wardId] || 0;
-    const intensity = Math.min(count / maxCount, 1);
-    // Red fill at 15% base, darker for more reports
-    const opacity = 0.15 + intensity * 0.35;
+    const intensity = maxCount > 0 ? Math.min(count / maxCount, 1) : 0;
+    // Base: 8% opacity, scale up to max 20% opacity with reports
+    const opacity = 0.08 + intensity * 0.12;
 
     return {
       color: COLORS.wardBorder,

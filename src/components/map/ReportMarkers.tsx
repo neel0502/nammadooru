@@ -1,8 +1,9 @@
-import { CircleMarker, Popup, useMap, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
+import { CircleMarker, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import { useState, useMemo } from 'react';
 import { useReports } from '../../hooks/useReports';
 import { useAppStore } from '../../store/useAppStore';
-import { CATEGORY_COLOR_MAP, CATEGORY_ICON_MAP, COLORS } from '../../lib/constants';
+import { CATEGORY_COLOR_MAP, CATEGORY_ICON_MAP } from '../../lib/constants';
 import { timeAgo } from '../../lib/geo';
 
 // Simple grid-based clustering
@@ -60,20 +61,25 @@ export function ReportMarkers() {
 
   return (
     <>
-      {/* Cluster markers — dark maroon circles with white count */}
+      {/* Cluster markers — green circles with white count */}
       {clusters.map((cluster, i) => {
-        const radius = Math.min(12 + Math.sqrt(cluster.count) * 4, 32);
+        let diameter = 20;
+        if (cluster.count >= 6 && cluster.count <= 15) diameter = 28;
+        else if (cluster.count >= 16 && cluster.count <= 30) diameter = 36;
+        else if (cluster.count >= 30) diameter = 44;
+
+        const clusterIcon = L.divIcon({
+          html: `<div class="custom-cluster-marker" style="width: ${diameter}px; height: ${diameter}px; line-height: ${diameter - 4}px; font-size: ${diameter >= 28 ? 14 : 11}px;">${cluster.count}</div>`,
+          className: 'custom-cluster-wrapper',
+          iconSize: [diameter, diameter],
+          iconAnchor: [diameter / 2, diameter / 2],
+        });
+
         return (
-          <CircleMarker
+          <Marker
             key={`cluster-${i}`}
-            center={[cluster.lat, cluster.lng]}
-            radius={radius}
-            pathOptions={{
-              color: COLORS.clusterMaroon,
-              fillColor: COLORS.clusterMaroon,
-              fillOpacity: 0.9,
-              weight: 2,
-            }}
+            position={[cluster.lat, cluster.lng]}
+            icon={clusterIcon}
             eventHandlers={{
               click: () => {
                 map.flyTo([cluster.lat, cluster.lng], Math.min(zoom + 2, 16), {
@@ -90,7 +96,7 @@ export function ReportMarkers() {
                   padding: '4px 8px',
                 }}
               >
-                <strong style={{ fontSize: 16, color: COLORS.clusterMaroon }}>
+                <strong style={{ fontSize: 16, color: '#16a34a' }}>
                   {cluster.count}
                 </strong>
                 <span style={{ fontSize: 12, color: '#666', display: 'block' }}>
@@ -98,7 +104,7 @@ export function ReportMarkers() {
                 </span>
               </div>
             </Popup>
-          </CircleMarker>
+          </Marker>
         );
       })}
 

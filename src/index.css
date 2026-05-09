@@ -1261,3 +1261,20 @@ button, a, select, input, textarea, [role="button"] {
   backdrop-filter: blur(3px);
   -webkit-backdrop-filter: blur(3px);
 }
+
+.custom-cluster-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-cluster-marker {
+  background: rgba(22, 163, 74, 0.85); /* #16a34a at 85% */
+  border: 2px solid rgba(255, 255, 255, 0.9); /* Thin white inner ring */
+  box-sizing: border-box;
+  border-radius: 50%;
+  color: white;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25); /* Subtle box shadow for depth */
+}
