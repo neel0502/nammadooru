@@ -102,15 +102,15 @@ export function ReportForm() {
       let dbWardId: string | null = null;
       if (matchedFeature) {
         const properties = matchedFeature.properties as any;
-        if (properties.ward_id) {
-          const { data: wardData } = await supabase
+        if (properties.ward_name) {
+          const { data: wardData, error: wardError } = await supabase
             .from('wards')
             .select('id')
             .eq('city_id', cityData.id)
-            .eq('ward_number', properties.ward_id)
-            .single();
+            .eq('name', properties.ward_name)
+            .maybeSingle();
           
-          if (wardData) {
+          if (wardData && !wardError) {
             dbWardId = wardData.id;
           }
         }
