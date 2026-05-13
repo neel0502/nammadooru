@@ -5,6 +5,7 @@ import { IssueList } from '../components/list/IssueList';
 import { WardSheet } from '../components/ward/WardSheet';
 import { ReportDetail } from '../components/report/ReportDetail';
 import { ReportForm } from '../components/report/ReportForm';
+import { ReportSuccessSheet } from '../components/report/ReportSuccessSheet';
 import { useAppStore } from '../store/useAppStore';
 import { useRealtime } from '../hooks/useRealtime';
 
@@ -32,6 +33,7 @@ export function Home() {
       <WardSheet />
       <ReportDetail />
       <ReportForm />
+      <ReportSuccessSheet />
     </div>
   );
 }

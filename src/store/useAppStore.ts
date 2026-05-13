@@ -22,6 +22,7 @@ interface AppState {
   showReportForm: boolean;
   showWardSheet: boolean;
   showReportDetail: boolean;
+  showSuccessSheet: boolean;
 
   // --- User Location ---
   userLocation: { lat: number; lng: number } | null;
@@ -31,6 +32,9 @@ interface AppState {
 
   // --- Mock Reports (used when Supabase is not configured) ---
   reports: Report[];
+
+  // --- Success Flow ---
+  submittedReport: Report | null;
 
   // --- Actions ---
   setSelectedWard: (ward: Feature<Polygon | MultiPolygon, WardFeatureProperties> | null) => void;
@@ -45,6 +49,8 @@ interface AppState {
   setShowReportForm: (show: boolean) => void;
   setShowWardSheet: (show: boolean) => void;
   setShowReportDetail: (show: boolean) => void;
+  setShowSuccessSheet: (show: boolean) => void;
+  setSubmittedReport: (report: Report | null) => void;
   setUserLocation: (loc: { lat: number; lng: number } | null) => void;
   setWardsGeoJSON: (data: GeoJSON.FeatureCollection) => void;
   setReports: (reports: Report[]) => void;
@@ -66,6 +72,8 @@ export const useAppStore = create<AppState>((set) => ({
   showReportForm: false,
   showWardSheet: false,
   showReportDetail: false,
+  showSuccessSheet: false,
+  submittedReport: null,
   userLocation: null,
   wardsGeoJSON: null,
   reports: [],
@@ -104,6 +112,8 @@ export const useAppStore = create<AppState>((set) => ({
   setShowReportForm: (show) => set({ showReportForm: show }),
   setShowWardSheet: (show) => set({ showWardSheet: show }),
   setShowReportDetail: (show) => set({ showReportDetail: show }),
+  setShowSuccessSheet: (show) => set({ showSuccessSheet: show }),
+  setSubmittedReport: (report) => set({ submittedReport: report }),
   setUserLocation: (loc) => set({ userLocation: loc }),
   setWardsGeoJSON: (data) => set({ wardsGeoJSON: data }),
   setReports: (reports) => set({ reports }),

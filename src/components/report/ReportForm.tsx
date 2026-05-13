@@ -130,7 +130,7 @@ export function ReportForm() {
 
       // Add to local store immediately
       if (insertedReport) {
-        addReport({
+        const fullReport = {
           ...insertedReport,
           category_id: selectedCategory,
           location: { lat: insertedReport.latitude, lng: insertedReport.longitude },
@@ -138,6 +138,35 @@ export function ReportForm() {
           cleanup_submitted_at: null,
           cleanup_verified_at: null,
           resolved_after_days: null,
+          ip_hash: null,
+          is_flagged: false,
+          flag_reason: null,
+          duplicate_of: null,
+        };
+        addReport(fullReport);
+        useAppStore.getState().setSubmittedReport(fullReport);
+      } else {
+        // Fallback for mock if supabase fails or is not used
+        useAppStore.getState().setSubmittedReport({
+          id: 'mock-id',
+          category_id: selectedCategory,
+          location: { lat: latitude, lng: longitude },
+          address: null,
+          landmark: null,
+          ward_id: null,
+          description: description || CATEGORIES.find(c => c.slug === selectedCategory)?.name || 'New report',
+          severity: 'medium',
+          status: 'submitted',
+          upvote_count: 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          city_id: 'mock-city',
+          photo_urls: photoUrls,
+          cleanup_photo_urls: [],
+          cleanup_submitted_at: null,
+          cleanup_verified_at: null,
+          resolved_after_days: null,
+          device_fingerprint: fingerprint,
           ip_hash: null,
           is_flagged: false,
           flag_reason: null,
@@ -150,7 +179,8 @@ export function ReportForm() {
         setShowReportForm(false);
         setSuccess(false);
         resetForm();
-      }, 1500);
+        useAppStore.getState().setShowSuccessSheet(true);
+      }, 1000);
     } catch (err) {
       console.error('Submit failed:', err);
     } finally {
