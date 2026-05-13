@@ -55,12 +55,18 @@ export function ReportForm() {
     setSubmitting(true);
     setOutOfBoundsError(false);
 
+    let matchedFeature: any = null;
+
     // Validate location is inside GBA
     if (wardsGeoJSON) {
       const pt = point([longitude, latitude]);
       const isInside = wardsGeoJSON.features.some((feature: any) => {
         try {
-          return booleanPointInPolygon(pt, feature);
+          if (booleanPointInPolygon(pt, feature)) {
+            matchedFeature = feature;
+            return true;
+          }
+          return false;
         } catch (e) {
           return false;
         }
@@ -92,6 +98,24 @@ export function ReportForm() {
         return;
       }
 
+      // Lookup ward
+      let dbWardId: string | null = null;
+      if (matchedFeature) {
+        const properties = matchedFeature.properties as any;
+        if (properties.ward_id) {
+          const { data: wardData } = await supabase
+            .from('wards')
+            .select('id')
+            .eq('city_id', cityData.id)
+            .eq('ward_number', properties.ward_id)
+            .single();
+          
+          if (wardData) {
+            dbWardId = wardData.id;
+          }
+        }
+      }
+
       // Upload photo if present
       let photoUrls: string[] = [];
       if (photo) {
@@ -112,10 +136,11 @@ export function ReportForm() {
         .from('reports')
         .insert({
           city_id: cityData.id,
+          ward_id: dbWardId,
           category_id: catData.id,
           latitude,
           longitude,
-          description: description || CATEGORIES.find(c => c.slug === selectedCategory)?.name || 'New report',
+          description: description || null,
           severity: 'medium',
           photo_urls: photoUrls,
           device_fingerprint: fingerprint,
@@ -133,6 +158,7 @@ export function ReportForm() {
         const fullReport = {
           ...insertedReport,
           category_id: selectedCategory,
+          ward_id: dbWardId,
           location: { lat: insertedReport.latitude, lng: insertedReport.longitude },
           cleanup_photo_urls: [],
           cleanup_submitted_at: null,
@@ -155,8 +181,8 @@ export function ReportForm() {
           location: { lat: latitude, lng: longitude },
           address: null,
           landmark: null,
-          ward_id: null,
-          description: description || CATEGORIES.find(c => c.slug === selectedCategory)?.name || 'New report',
+          ward_id: dbWardId,
+          description: description || null,
           severity: 'medium',
           status: 'submitted',
           upvote_count: 0,

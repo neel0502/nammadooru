@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import { point } from '@turf/helpers';
 import { useAppStore } from '../../store/useAppStore';
 import { BottomSheet } from '../common/BottomSheet';
 import { CATEGORY_ICON_MAP, CATEGORIES } from '../../lib/constants';
@@ -22,9 +24,13 @@ export function ReportSuccessSheet() {
   let acName = '';
   
   if (wardsGeoJSON && r.location) {
+    const pt = point([r.location.lng, r.location.lat]);
     const wardFeature = wardsGeoJSON.features.find((f: any) => {
-      const wId = f.properties?.ward_id?.toString();
-      return wId && wId === r.ward_id;
+      try {
+        return booleanPointInPolygon(pt, f);
+      } catch (e) {
+        return false;
+      }
     });
     if (wardFeature) {
       acName = (wardFeature.properties as any)?.ac || '';
