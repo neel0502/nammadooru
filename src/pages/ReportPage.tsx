@@ -199,7 +199,7 @@ export function ReportPage() {
             rel="noopener noreferrer"
             className="report-detail__action-btn report-detail__action-btn--wa"
           >
-            💬 WhatsApp
+            💬 Share to WhatsApp
           </a>
         </div>
 
@@ -229,6 +229,8 @@ export function ReportPage() {
             report={r}
             categoryName={catName}
             categoryColor={catColor}
+            wardNumber={r.ward_id?.toString()}
+            acName={ac?.name}
           />
         </div>
 

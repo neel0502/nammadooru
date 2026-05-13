@@ -49,7 +49,6 @@ export const CATEGORIES: CategoryConfig[] = [
   { slug: 'water', name: 'Water Supply', icon: '💧', color: '#3b82f6', shortName: 'Water' },
   { slug: 'streetlight', name: 'Streetlights', icon: '💡', color: '#eab308', shortName: 'Lights' },
   { slug: 'drainage', name: 'Drainage / Flooding', icon: '🌊', color: '#06b6d4', shortName: 'Drainage' },
-  { slug: 'encroachment', name: 'Encroachment', icon: '🚧', color: '#8b5cf6', shortName: 'Encroach' },
 ];
 
 export const CATEGORY_COLOR_MAP: Record<string, string> = Object.fromEntries(

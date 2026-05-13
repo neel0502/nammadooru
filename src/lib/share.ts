@@ -18,22 +18,25 @@ interface ShareOpts {
 
 function buildShareText(opts: ShareOpts): string {
   const icon = CATEGORY_ICON_MAP[opts.report.category_id] || '📌';
-  const url = `${window.location.origin}/report/${opts.report.id}`;
+  const url = getReportUrl(opts.report.id);
   const dept = getDepartment(opts.report.category_id);
 
-  const lines = [
-    `${icon} ${opts.report.description || 'Civic issue reported'}`,
-    opts.report.address ? `📍 ${opts.report.address}` : '',
-    opts.wardName ? `🏘️ Ward: ${opts.wardName}` : '',
-    `📋 ${opts.categoryName}`,
-    opts.mlaName ? `🗳️ MLA: ${opts.mlaName}` : '',
-    dept ? `📞 ${dept.shortName}: ${dept.call}` : '',
-    `🔗 ${url}`,
-    '',
-    '#NammaDooru #Bengaluru',
-  ].filter(Boolean);
-
-  return lines.join('\n');
+  let text = `${icon} ${opts.report.description || 'Civic issue'}\n`;
+  if (opts.report.address) text += `📍 ${opts.report.address}\n`;
+  
+  if (opts.wardName || opts.mlaName) {
+    const parts = [];
+    if (opts.wardName) parts.push(`Ward: ${opts.wardName}`);
+    if (opts.mlaName) parts.push(`MLA: ${opts.mlaName}`);
+    text += `🏛️ ${parts.join(' | ')}\n`;
+  }
+  
+  if (dept) {
+    text += `📞 Dept: ${dept.name} (${dept.call})\n`;
+  }
+  
+  text += `\nReport & upvote: ${url}`;
+  return text;
 }
 
 function getReportUrl(reportId: string): string {

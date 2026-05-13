@@ -50,41 +50,37 @@ const DEPARTMENTS: Record<string, DepartmentInfo> = {
       { label: 'West Zone', number: '8277884012' },
     ],
   },
-  encroachment: {
-    name: 'GBA / BBMP Revenue Section',
-    shortName: 'BBMP Revenue',
-    call: '1533',
-    whatsapp: '9480685700',
-  },
 };
 
 export function getDepartment(categorySlug: string): DepartmentInfo | null {
   return DEPARTMENTS[categorySlug] || null;
 }
 
-/**
- * Generate a WhatsApp deep link with pre-filled complaint message.
- */
 export function whatsappComplaintLink(
   phone: string,
   opts: {
     title: string;
     address?: string;
     wardName?: string;
+    wardNumber?: string;
+    acName?: string;
     category: string;
     date: string;
     reportUrl: string;
   }
 ): string {
-  const lines = [
-    `🚨 Complaint: ${opts.title}`,
-    opts.address ? `📍 Location: ${opts.address}` : '',
-    opts.wardName ? `🏘️ Ward: ${opts.wardName}` : '',
-    `📋 Category: ${opts.category}`,
-    `📅 Reported: ${opts.date}`,
-    `🔗 View: ${opts.reportUrl}`,
-  ].filter(Boolean);
+  let text = `🚨 Civic Complaint via NammaDooru\n\n`;
+  text += `Category: ${opts.category}\n`;
+  text += `Issue: ${opts.title}\n`;
+  if (opts.address) text += `Location: ${opts.address}\n`;
+  
+  if (opts.wardName) {
+    text += `Ward: ${opts.wardName}${opts.wardNumber ? ` (#${opts.wardNumber})` : ''}\n`;
+  }
+  if (opts.acName) text += `AC: ${opts.acName}\n`;
+  
+  text += `\nReported: ${opts.date}\n`;
+  text += `View details: ${opts.reportUrl}`;
 
-  const text = encodeURIComponent(lines.join('\n'));
-  return `https://wa.me/91${phone}?text=${text}`;
+  return `https://wa.me/91${phone}?text=${encodeURIComponent(text)}`;
 }

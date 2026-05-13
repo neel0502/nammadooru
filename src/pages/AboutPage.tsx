@@ -3,10 +3,9 @@ export function AboutPage() {
     <div style={{ padding: 24, fontFamily: "'DM Sans', sans-serif", maxWidth: 600, margin: '0 auto' }}>
       <h1>About NammaDooru</h1>
       <p><strong>ನಮ್ಮ ದೂರು</strong> — "Our Complaint" in Kannada</p>
-      <p>
-        NammaDooru is an anonymous, map-first civic complaints platform for Bengaluru.
-        Report issues like garbage, potholes, water supply problems, broken streetlights,
-        drainage issues, and encroachments — and see which elected officials are accountable.
+      <p className="about-description">
+        Browse and report civic issues — from garbage hotspots and potholes to
+        drainage issues — and see which elected officials are accountable.
       </p>
       <h2>How it works</h2>
       <ol>

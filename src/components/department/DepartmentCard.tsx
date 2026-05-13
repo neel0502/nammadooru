@@ -6,9 +6,11 @@ interface Props {
   categoryName: string;
   categoryColor: string;
   wardName?: string;
+  wardNumber?: string;
+  acName?: string;
 }
 
-export function DepartmentCard({ report, categoryName, categoryColor, wardName }: Props) {
+export function DepartmentCard({ report, categoryName, categoryColor, wardName, wardNumber, acName }: Props) {
   const dept = getDepartment(report.category_id);
   if (!dept) return null;
 
@@ -21,6 +23,8 @@ export function DepartmentCard({ report, categoryName, categoryColor, wardName }
     title: report.description || categoryName,
     address: report.address || undefined,
     wardName,
+    wardNumber,
+    acName,
     category: categoryName,
     date,
     reportUrl,
