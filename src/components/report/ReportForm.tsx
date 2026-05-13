@@ -9,7 +9,7 @@ import { CATEGORIES } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
 
 export function ReportForm() {
-  const { showReportForm, setShowReportForm, addReport, wardsGeoJSON } = useAppStore();
+  const { showReportForm, setShowReportForm, addReport, wardsGeoJSON, setShowSuccessSheet, setSubmittedReport } = useAppStore();
   const { latitude, longitude, loading: gpsLoading, locate } = useGeolocation();
   const fingerprint = useFingerprint();
 
@@ -144,10 +144,12 @@ export function ReportForm() {
           duplicate_of: null,
         };
         addReport(fullReport);
-        useAppStore.getState().setSubmittedReport(fullReport);
+        console.log('Setting submitted report (Supabase):', fullReport);
+        setSubmittedReport(fullReport);
       } else {
         // Fallback for mock if supabase fails or is not used
-        useAppStore.getState().setSubmittedReport({
+        console.log('Setting submitted report (Mock)');
+        setSubmittedReport({
           id: 'mock-id',
           category_id: selectedCategory,
           location: { lat: latitude, lng: longitude },
@@ -179,7 +181,8 @@ export function ReportForm() {
         setShowReportForm(false);
         setSuccess(false);
         resetForm();
-        useAppStore.getState().setShowSuccessSheet(true);
+        console.log('Opening success sheet!');
+        setShowSuccessSheet(true);
       }, 1000);
     } catch (err) {
       console.error('Submit failed:', err);

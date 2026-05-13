@@ -10,10 +10,10 @@ import { useAppStore } from '../store/useAppStore';
 import { useRealtime } from '../hooks/useRealtime';
 
 export function Home() {
-  const { viewMode, showReportForm, setShowReportForm, showWardSheet, showReportDetail } = useAppStore();
+  const { viewMode, showReportForm, setShowReportForm, showWardSheet, showReportDetail, showSuccessSheet } = useAppStore();
   useRealtime();
 
-  const anySheetOpen = showReportForm || showWardSheet || showReportDetail;
+  const anySheetOpen = showReportForm || showWardSheet || showReportDetail || showSuccessSheet;
 
   return (
     <div className="home">
