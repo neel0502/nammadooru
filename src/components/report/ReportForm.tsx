@@ -7,6 +7,8 @@ import { useGeolocation } from '../../hooks/useGeolocation';
 import { useFingerprint } from '../../hooks/useFingerprint';
 import { CATEGORIES } from '../../lib/constants';
 import { supabase } from '../../lib/supabase';
+import * as tf from '@tensorflow/tfjs';
+import * as nsfwjs from 'nsfwjs';
 
 export function ReportForm() {
   const { showReportForm, setShowReportForm, addReport, wardsGeoJSON, setShowSuccessSheet, setSubmittedReport } = useAppStore();
@@ -20,14 +22,54 @@ export function ReportForm() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [outOfBoundsError, setOutOfBoundsError] = useState(false);
+  const [analyzingImage, setAnalyzingImage] = useState(false);
+  const [nsfwError, setNsfwError] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setPhoto(file);
+      setNsfwError(false);
+      setPhoto(null);
+      setPhotoPreview(null);
+      
       const reader = new FileReader();
-      reader.onload = () => setPhotoPreview(reader.result as string);
+      reader.onload = async () => {
+        const dataUrl = reader.result as string;
+        setPhotoPreview(dataUrl);
+
+        setAnalyzingImage(true);
+        try {
+          // Load image for analysis
+          const img = new Image();
+          img.src = dataUrl;
+          await new Promise((resolve) => { img.onload = resolve; });
+          
+          // Load model and classify
+          const model = await nsfwjs.load();
+          const predictions = await model.classify(img);
+          
+          // Flag as NSFW if Porn, Hentai, or Sexy probability is high
+          const isNsfw = predictions.some(p => 
+            ['Porn', 'Hentai', 'Sexy'].includes(p.className) && p.probability > 0.6
+          );
+          
+          if (isNsfw) {
+            setNsfwError(true);
+            setPhoto(null);
+            setPhotoPreview(null);
+            if (fileRef.current) fileRef.current.value = '';
+          } else {
+            setPhoto(file);
+          }
+        } catch (err) {
+          console.error("NSFW check failed", err);
+          // Allow upload if model fails to load
+          setPhoto(file);
+        } finally {
+          setAnalyzingImage(false);
+        }
+      };
       reader.readAsDataURL(file);
     }
   };
@@ -43,6 +85,7 @@ export function ReportForm() {
     setDescription('');
     removePhoto();
     setOutOfBoundsError(false);
+    setNsfwError(false);
   };
 
   const handleSubmit = async () => {
@@ -244,27 +287,47 @@ export function ReportForm() {
               />
               {photoPreview ? (
                 <div className="report-form__preview">
-                  <img src={photoPreview} alt="Preview" />
-                  <button
-                    className="report-form__preview-remove"
-                    onClick={removePhoto}
-                    type="button"
-                    aria-label="Remove photo"
-                  >
-                    ✕
-                  </button>
-                  <button
-                    className="report-form__preview-change"
-                    onClick={() => fileRef.current?.click()}
-                    type="button"
-                  >
-                    📷 Retake
-                  </button>
+                  <img src={photoPreview} alt="Preview" style={{ filter: analyzingImage ? 'blur(4px)' : 'none' }} />
+                  {!analyzingImage && (
+                    <>
+                      <button
+                        className="report-form__preview-remove"
+                        onClick={removePhoto}
+                        type="button"
+                        aria-label="Remove photo"
+                      >
+                        ✕
+                      </button>
+                      <button
+                        className="report-form__preview-change"
+                        onClick={() => fileRef.current?.click()}
+                        type="button"
+                      >
+                        📷 Retake
+                      </button>
+                    </>
+                  )}
+                  {analyzingImage && (
+                    <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.5)', borderRadius: '8px' }}>
+                      <span style={{ background: '#fff', padding: '8px 16px', borderRadius: '20px', fontSize: '13px', fontWeight: 600, boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                        🔍 Analyzing image...
+                      </span>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <button className="report-form__capture-btn" onClick={() => fileRef.current?.click()}>
                   📸 Take Photo
                 </button>
+              )}
+              
+              {/* NSFW Error Message */}
+              {nsfwError && (
+                <div className="report-form__error" style={{ marginTop: '12px', background: '#fef2f2', padding: '12px', borderRadius: '8px', borderLeft: '4px solid #ef4444' }}>
+                  <p style={{ color: '#991b1b', fontSize: '13px', margin: 0, fontWeight: 500 }}>
+                    ⚠️ Inappropriate image detected. Please upload a valid photo of the issue.
+                  </p>
+                </div>
               )}
             </div>
 
@@ -320,7 +383,7 @@ export function ReportForm() {
             <button
               className="report-form__submit"
               onClick={handleSubmit}
-              disabled={!selectedCategory || submitting}
+              disabled={!selectedCategory || submitting || analyzingImage || nsfwError}
             >
               {submitting ? 'Submitting...' : 'Submit Report'}
             </button>

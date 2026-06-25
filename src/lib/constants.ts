@@ -104,3 +104,6 @@ export const BENGALURU_CITY_SLUG = 'bengaluru';
 // --- Google Maps ---
 export const googleMapsUrl = (lat: number, lng: number) =>
   `https://www.google.com/maps?q=${lat},${lng}`;
+
+// --- MLA Team Phone ---
+export const MLA_TEAM_PHONE = '9876543210'; // Replace with actual MLA team number
